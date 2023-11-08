@@ -18,6 +18,7 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "register:2:1,test_config:2:1,trigger:2:1,metrics:2:1,test_topic:2:1,heartbeat:2:1"
     ports:
       - "9093:9093"
     networks: 

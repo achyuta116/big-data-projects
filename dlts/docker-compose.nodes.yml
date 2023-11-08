@@ -1,0 +1,22 @@
+version: '2'
+services:
+  test-client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      BROKER_IP: kafka-broker-1:9092
+    networks:
+      - dlts-net
+
+  driver-1:
+    build:
+      context: .
+      dockerfile: driver/Dockerfile
+    environment:
+      SEED: 1
+      BROKER_IP: kafka-broker-1:9092
+    networks:
+      - dlts-net
+networks:
+  dlts-net:

@@ -2,6 +2,10 @@ module github.com/achyuta116/big-data-projects/dlts
 
 go 1.19
 
+replace (
+    github.com/achyuta116/big-data-projects/dlts/lib => ./lib
+)
+
 require (
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/klauspost/compress v1.15.9 // indirect
