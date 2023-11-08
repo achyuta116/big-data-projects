@@ -182,7 +182,8 @@ func main() {
 	nodeId := getNodeId()
 	nodeIp := getNodeIp()
 
-	stopChan := make(chan struct{})
+	testConfigStopChan := make(chan struct{})
+    triggerStopChan := make(chan struct{})
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
@@ -237,7 +238,7 @@ func main() {
 				tests.Lock.Unlock()
 			}
 		}
-	}(stopChan)
+	}(testConfigStopChan)
 
 	go func(stopChan chan struct{}) {
 		r := kafka.NewReader(kafka.ReaderConfig{
@@ -266,7 +267,7 @@ func main() {
 				}
 			}
 		}
-	}(stopChan)
+	}(triggerStopChan)
 
 	go func() {
 		w := kafka.NewWriter(kafka.WriterConfig{
@@ -329,7 +330,8 @@ func main() {
 	}()
 
 	<-signalChan
-	close(stopChan)
+	close(triggerStopChan)
+    close(testConfigStopChan)
 
 	fmt.Println("Exited gracefully")
 }
