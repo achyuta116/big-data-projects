@@ -313,44 +313,27 @@ func main() {
 			}
 			tests.Lock.RUnlock()
 
-			w.WriteMessages(context.Background(), messages...)
-		}
-	}()
-
-	go func() {
-		w := kafka.NewWriter(kafka.WriterConfig{
-			Brokers: []string{broker},
-			Topic:   "metrics",
-		})
-
-		for {
-			time.Sleep(time.Second)
-
-			var messages []kafka.Message
-			tests.Lock.RLock()
+			tests.Lock.Lock()
+			toDelete := make([]string, 0)
 			for k, v := range tests.Tests {
 				if v.Done {
-					var message kafka.Message
-					v.Lock.RLock()
-					result := calculateMetrics(v.Times)
-					v.Lock.RUnlock()
-					message.Value, _ = json.Marshal(dlts.Metrics{
-						TestMetrics: result,
-						NodeId:      nodeId,
-						TestId:      k,
-					})
-					messages = append(messages, message)
+					toDelete = append(toDelete, k)
 				}
 			}
-			tests.Lock.RUnlock()
 
-            w.WriteMessages(context.Background(), messages...)
+			for _, key := range toDelete {
+                delete(tests.Tests, key)
+			}
+
+			tests.Lock.Unlock()
+
+			w.WriteMessages(context.Background(), messages...)
 		}
 	}()
 
 	<-signalChan
 	close(triggerStopChan)
-    close(testConfigStopChan)
+	close(testConfigStopChan)
 
 	fmt.Println("Exited gracefully")
 }
