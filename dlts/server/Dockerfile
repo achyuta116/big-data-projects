@@ -4,11 +4,11 @@ EXPOSE 8000
 
 WORKDIR /app
 
-COPY go.mod ./
+COPY go.mod go.sum ./
 
 RUN go mod download
 
-COPY *.go ./
+COPY server/*.go ./
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /mini-server
 
