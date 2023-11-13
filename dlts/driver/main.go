@@ -71,6 +71,10 @@ func register(broker string, nodeId string, nodeIp string) {
 }
 
 func minimum(arr []float64) float64 {
+	if len(arr) == 0 {
+		return 0
+	}
+
 	min := arr[0]
 	for _, value := range arr {
 		if value < min {
@@ -81,6 +85,10 @@ func minimum(arr []float64) float64 {
 }
 
 func maximum(arr []float64) float64 {
+	if len(arr) == 0 {
+		return 0
+	}
+
 	max := arr[0]
 	for _, value := range arr {
 		if value > max {
@@ -91,6 +99,10 @@ func maximum(arr []float64) float64 {
 }
 
 func median(arr []float64) float64 {
+	if len(arr) == 0 {
+		return 0
+	}
+
 	sort.Float64s(arr)
 	mid := len(arr) / 2
 	if len(arr)%2 == 0 {
@@ -100,6 +112,10 @@ func median(arr []float64) float64 {
 }
 
 func mean(arr []float64) float64 {
+	if len(arr) == 0 {
+		return 0
+	}
+
 	var sum float64
 	for _, value := range arr {
 		sum += value
@@ -181,9 +197,10 @@ func main() {
 
 	nodeId := getNodeId()
 	nodeIp := getNodeIp()
+	tests.Tests = make(map[string]*Test)
 
 	testConfigStopChan := make(chan struct{})
-    triggerStopChan := make(chan struct{})
+	triggerStopChan := make(chan struct{})
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
@@ -227,6 +244,7 @@ func main() {
 				}
 
 				var config dlts.TestConfig
+				fmt.Println("Recvd Test Config:", string(message.Value))
 				json.Unmarshal(message.Value, &config)
 
 				tests.Lock.Lock()
@@ -258,6 +276,7 @@ func main() {
 				}
 
 				var trigger dlts.Trigger
+				fmt.Println("Recvd Trigger:", string(message.Value))
 				json.Unmarshal(message.Value, &trigger)
 
 				if tests.Tests[trigger.TestId].Config.Type == "AVALANCHE" {
