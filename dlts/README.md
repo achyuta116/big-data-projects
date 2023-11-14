@@ -72,7 +72,10 @@ $ curl -X POST 127.0.0.1:8001/tsunami/2
 $ curl -X POST 127.0.0.1:8001/trigger/tcuAxhxKQFDaFpLSjFbc
 # trigger the actual tsunami test specifying the test ID
 ```
-On successful submission of these commands, the docker containers should log out metrics of the ongoing test, updating each second.
+On successful submission of these commands, the docker containers should log out metrics of the ongoing test, updating each second.  
+> [!NOTE]
+> - Each log message is a JSON object in the format specified by the project reference
+> - The message formats are shared between the Orchestrator and Driver nodes through `lib/dlts.go`
 ### References
 - [This](https://hackmd.io/@pesu-bigdata/S1nvSXAza) wonderful project description written by our TAs are Uni
 - [Learn](https://rmoff.net/2018/08/02/kafka-listeners-explained/) how Kafka listeners work and how to configure them
