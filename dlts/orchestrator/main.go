@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"math/rand"
 	"net/http"
 	"os"
@@ -118,10 +119,22 @@ func Trigger(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func Home(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("templates/index.html"))
+
+	w.WriteHeader(http.StatusOK)
+
+	tmpl.Execute(w, nil)
+}
+
 func main() {
 	r := mux.NewRouter()
 	broker = os.Getenv("BROKER_IP")
-    nodes = make(map[string]*struct{Up bool; Last time.Time; NodeIp string})
+	nodes = make(map[string]*struct {
+		Up     bool
+		Last   time.Time
+		NodeIp string
+	})
 
 	registerStopChan := make(chan struct{})
 	heartbeatStopChan := make(chan struct{})
@@ -221,11 +234,13 @@ func main() {
 		}
 	}(metricsStopChan)
 
+	r.HandleFunc("/", Home).Methods(http.MethodGet)
 	r.HandleFunc("/avalanche", Avalanche).Methods(http.MethodPost)
 	r.HandleFunc("/tsunami/{num}", Tsunami).Methods(http.MethodPost)
 	r.HandleFunc("/metrics/{testId}", Metrics).Methods(http.MethodGet)
 	r.HandleFunc("/trigger/{testId}", Trigger).Methods(http.MethodPost)
 	r.HandleFunc("/tests", Tests).Methods(http.MethodGet)
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	http.ListenAndServe(":8001", r)
 }

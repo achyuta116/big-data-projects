@@ -8,6 +8,10 @@ COPY ../go.mod ../go.sum ./
 
 COPY ../lib/dlts.go ./lib/
 
+COPY orchestrator/static/ ./static/
+
+COPY orchestrator/templates/ ./templates/
+
 RUN go mod download
 
 COPY orchestrator/main.go ./
