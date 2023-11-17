@@ -32,7 +32,7 @@ var tests struct {
 }
 
 var (
-	resource    = "server:8000"
+    resource    = "http://server:8000"
 	numRequests = 500
 )
 
